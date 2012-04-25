@@ -46,6 +46,9 @@
 #include <QWebPage>
 #include <QWebInspector>
 #include <QMapIterator>
+#include <QBuffer>
+#include <QTextStream>
+  
 
 #include "networkaccessmanager.h"
 #include "utils.h"
@@ -430,6 +433,26 @@ bool WebPage::render(const QString &fileName)
     return buffer.save(fileName);
 }
 
+QString WebPage::getScreenshot(int size_x, int size_y, const QString &format, int quality)
+{
+    if (m_mainFrame->contentsSize().isEmpty())
+        return "";
+
+    QImage image = renderImage();
+    QImage scaled = image.scaled(size_x, size_y);
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    scaled.save(&buffer, qPrintable(format), quality);
+
+    QString result;
+    QTextStream(&result) << "data:image/" << format.toLower() << ";base64," << ba.toBase64();
+
+    return result;
+}
+
+
+
 QImage WebPage::renderImage()
 {
     QSize contentsSize = m_mainFrame->contentsSize();
@@ -738,6 +761,7 @@ void WebPage::initCompletions()
     addCompletion("open");
     addCompletion("release");
     addCompletion("render");
+    addCompletion("getScreenshot");
     addCompletion("sendEvent");
     addCompletion("uploadFile");
     // callbacks

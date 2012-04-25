@@ -97,6 +97,7 @@ public slots:
 
     QVariant evaluateJavaScript(const QString &code);
     bool render(const QString &fileName);
+    QString getScreenshot(int size_x, int size_y, const QString &format, int quality);
     bool injectJs(const QString &jsFilePath);
     void _appendScriptElement(const QString &scriptUrl);
     void uploadFile(const QString &selector, const QString &fileName);
